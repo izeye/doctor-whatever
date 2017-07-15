@@ -91,6 +91,8 @@
     $('#number2').val(number2);
   };
 
+  var retried = false;
+
   var checkAnswer = function () {
     var answer = $('#answer').val();
     if (answer === '') {
@@ -103,8 +105,17 @@
       score += level;
     }
     else {
+      if (!retried) {
+        alert("Wrong! Try again!")
+        retried = true;
+        return;
+      }
+      retried = false;
+
       alert("Wrong! The correct answer was " + correctAnswer + "!");
-      score -= level;
+      if (score !== 0) {
+        score -= level;
+      }
     }
     setScore();
 
