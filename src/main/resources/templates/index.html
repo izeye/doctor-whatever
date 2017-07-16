@@ -106,11 +106,12 @@
     }
     else {
       if (!retried) {
-        alert("Wrong! Try again!")
+        alert("Wrong! Try again!");
+
+        $('#answer').val('');
         retried = true;
         return;
       }
-      retried = false;
 
       alert("Wrong! The correct answer was " + correctAnswer + "!");
       if (score !== 0) {
@@ -135,6 +136,8 @@
 
     $('#answer').val('');
     $('#answer').focus();
+
+    retried = false;
   };
 
   setLevel();
