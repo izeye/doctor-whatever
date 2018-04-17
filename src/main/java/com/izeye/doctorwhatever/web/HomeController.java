@@ -18,4 +18,9 @@ public class HomeController {
 		return "index";
 	}
 
+	@GetMapping("/subtract")
+	public String subtract() {
+		return "subtract";
+	}
+
 }

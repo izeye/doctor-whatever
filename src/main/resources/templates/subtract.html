@@ -1,0 +1,167 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Doctor Whatever - Math - Subtract</title>
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <script th:src="@{/webjars/jquery/jquery.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1>Doctor Whatever - Math - Subtract</h1>
+        <h2>
+            Level: <input id="level" type="number" disabled><br/>
+            Score: <input id="score" type="number" disabled>
+        </h2>
+    </div>
+    <div>
+        <input id="number1" type="number" disabled>
+        -
+        <input id="number2" type="number" disabled>
+        =
+        <input id="answer" type="number" autofocus>
+        <input type="submit" onclick="checkAnswer()">
+    </div>
+</div>
+<script>
+  var scoreForNextLevel = 100;
+
+  var levelInfos = [{
+    number1Digits: 1,
+    number2Digits: 1
+  },{
+    number1Digits: 2,
+    number2Digits: 1
+  },{
+    number1Digits: 2,
+    number2Digits: 2
+  },{
+    number1Digits: 3,
+    number2Digits: 1
+  },{
+    number1Digits: 3,
+    number2Digits: 2
+  },{
+    number1Digits: 3,
+    number2Digits: 3
+  },{
+    number1Digits: 4,
+    number2Digits: 1
+  },{
+    number1Digits: 4,
+    number2Digits: 2
+  },{
+    number1Digits: 4,
+    number2Digits: 3
+  },{
+    number1Digits: 4,
+    number2Digits: 4
+  }];
+
+  var score = parseInt(localStorage['math.score.subtract']) || 0;
+
+  var getLevel = function () {
+    return 1 + Math.floor(score / scoreForNextLevel);
+  };
+
+  var level = getLevel();
+
+  var number1;
+  var number2;
+
+  $('#answer').on('keypress', function (e) {
+    if (e.which === 13) {
+      checkAnswer();
+    }
+  });
+
+  var setScore = function () {
+    $('#score').val(score);
+    localStorage.setItem('math.score.subtract', score);
+  };
+
+  var setLevel = function () {
+    $('#level').val(level);
+  };
+
+  var getRandomInt = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  var prepareQuestion = function () {
+    var levelInfo = levelInfos[level - 1];
+    if (!levelInfo) {
+      alert("You've cleared all levels! Please wait for next levels! Coming soon!");
+      return;
+    }
+
+    do {
+      number1 = getRandomInt(
+        Math.pow(10, levelInfo.number1Digits - 1), Math.pow(10, levelInfo.number1Digits) - 1);
+      number2 = getRandomInt(
+        Math.pow(10, levelInfo.number2Digits - 1), Math.pow(10, levelInfo.number2Digits) - 1);
+    } while (number1 < number2)
+
+    $('#number1').val(number1);
+    $('#number2').val(number2);
+  };
+
+  var retried = false;
+
+  var checkAnswer = function () {
+    var answer = $('#answer').val();
+    if (answer === '') {
+      alert("Answer the question!");
+      return;
+    }
+    var correctAnswer = number1 - number2;
+    if (answer == correctAnswer) {
+      alert("Correct! Next!");
+      score += level;
+    }
+    else {
+      if (!retried) {
+        alert("Wrong! Try again!");
+
+        $('#answer').val('');
+        retried = true;
+        return;
+      }
+
+      alert("Wrong! The correct answer was " + correctAnswer + "!");
+      if (score !== 0) {
+        score -= level;
+      }
+    }
+    setScore();
+
+    var newLevel = getLevel();
+    if (level !== newLevel) {
+      if (newLevel > level) {
+        alert("Congratulation! You've cleared the level " + level + "!");
+      }
+      else {
+        alert("Oop! You're back to the level " + newLevel + "!");
+      }
+      level = newLevel;
+      setLevel();
+    }
+
+    prepareQuestion();
+
+    $('#answer').val('');
+    $('#answer').focus();
+
+    retried = false;
+  };
+
+  setLevel();
+  setScore();
+
+  prepareQuestion();
+</script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>
